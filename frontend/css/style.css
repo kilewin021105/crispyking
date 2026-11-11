@@ -1,0 +1,445 @@
+/* =====================================================================
+   Crispy King — shared design system (customer + staff pages)
+   ===================================================================== */
+
+:root {
+  --ck-red: #d81324;
+  --ck-red-dark: #a30d1c;
+  --ck-red-light: #ff4757;
+  --ck-gold: #ffb81c;
+  --ck-gold-dark: #e6a319;
+  --ck-dark: #241512;
+  --ck-cream: #fff8ee;
+  --ck-surface: #ffffff;
+  --ck-text-muted: #7a6f68;
+  --ck-radius: 1rem;
+  --ck-shadow-sm: 0 2px 8px rgba(36, 21, 18, 0.06);
+  --ck-shadow-md: 0 10px 28px rgba(36, 21, 18, 0.12);
+  --ck-shadow-red: 0 10px 24px rgba(216, 19, 36, 0.35);
+}
+
+* { scrollbar-width: thin; }
+
+body {
+  background-color: var(--ck-cream);
+  font-family: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--ck-dark);
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, .fw-bold, .fs-3 {
+  font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+  font-weight: 600;
+}
+
+/* ---- Navbar --------------------------------------------------------- */
+.navbar-crispy {
+  background: linear-gradient(100deg, var(--ck-red) 0%, var(--ck-red-dark) 100%);
+  box-shadow: 0 4px 18px rgba(163, 13, 28, 0.35);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.navbar-crispy .navbar-brand {
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.3px;
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar-crispy .navbar-brand .brand-badge {
+  background: var(--ck-gold);
+  color: var(--ck-dark);
+  border-radius: 50%;
+  width: 2.1rem;
+  height: 2.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: var(--ck-shadow-sm);
+}
+.navbar-crispy .btn-outline-light {
+  border-radius: 2rem;
+  font-weight: 500;
+  border-width: 1.5px;
+}
+
+/* ---- Buttons ---------------------------------------------------------- */
+.btn-crispy {
+  background: linear-gradient(135deg, var(--ck-red-light), var(--ck-red));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 2rem;
+  padding: 0.55rem 1.1rem;
+  box-shadow: var(--ck-shadow-red);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.btn-crispy:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  color: #fff;
+}
+.btn-crispy:active:not(:disabled) { transform: translateY(0); }
+.btn-crispy:disabled {
+  background: #d9a3a8;
+  box-shadow: none;
+  opacity: 0.8;
+}
+
+.badge-gold {
+  background-color: var(--ck-gold);
+  color: var(--ck-dark);
+  font-weight: 700;
+  border-radius: 2rem;
+  padding: 0.4em 0.8em;
+}
+
+/* ---- Hero (customer page) --------------------------------------------- */
+.hero {
+  background: radial-gradient(120% 160% at 15% 0%, var(--ck-red-light) 0%, var(--ck-red) 45%, var(--ck-red-dark) 100%);
+  color: #fff;
+  border-radius: 0 0 2rem 2rem;
+  padding: 3rem 1.5rem 2.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(163, 13, 28, 0.3);
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 2px, transparent 2px);
+  background-size: 22px 22px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.hero-emoji {
+  font-size: 4rem;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
+}
+.hero h1 {
+  font-weight: 700;
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  margin-bottom: 0.4rem;
+}
+.hero p {
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 34rem;
+}
+.hero .btn-hero {
+  background: var(--ck-gold);
+  color: var(--ck-dark);
+  border: none;
+  font-weight: 700;
+  border-radius: 2rem;
+  padding: 0.65rem 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+.hero .btn-hero:hover { transform: translateY(-2px); color: var(--ck-dark); }
+
+/* ---- Category pills ---------------------------------------------------- */
+.category-pills {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+  scrollbar-width: none;
+}
+.category-pills::-webkit-scrollbar { display: none; }
+.category-pills .pill {
+  flex: 0 0 auto;
+  border: 1.5px solid #eadfd2;
+  background: var(--ck-surface);
+  color: var(--ck-dark);
+  border-radius: 2rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.category-pills .pill:hover { border-color: var(--ck-red-light); }
+.category-pills .pill.active {
+  background: var(--ck-red);
+  border-color: var(--ck-red);
+  color: #fff;
+  box-shadow: var(--ck-shadow-red);
+}
+
+/* ---- Search box ---------------------------------------------------------- */
+.search-box {
+  position: relative;
+  flex: 0 0 auto;
+}
+.search-box svg {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ck-text-muted);
+  pointer-events: none;
+}
+.search-box input {
+  border-radius: 2rem;
+  padding-left: 2.2rem;
+  border: 1.5px solid #eadfd2;
+  min-width: 200px;
+}
+.search-box input:focus {
+  border-color: var(--ck-red-light);
+  box-shadow: 0 0 0 0.2rem rgba(216, 19, 36, 0.12);
+}
+
+/* ---- Section headings ---------------------------------------------------- */
+.section-title {
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+.category-heading {
+  border-left: 5px solid var(--ck-red);
+  padding-left: 0.6rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+/* ---- Product cards ---------------------------------------------------- */
+.product-card {
+  border: none;
+  border-radius: var(--ck-radius);
+  overflow: hidden;
+  box-shadow: var(--ck-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--ck-surface);
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--ck-shadow-md);
+}
+.product-thumb {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.75rem;
+  background: linear-gradient(135deg, #ffe8d6, #ffd7c2);
+  position: relative;
+}
+.product-thumb .price-tag {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.6rem;
+  background: var(--ck-gold);
+  color: var(--ck-dark);
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-radius: 2rem;
+  padding: 0.25em 0.7em;
+  box-shadow: var(--ck-shadow-sm);
+}
+.product-card .card-body { padding: 0.9rem 1rem 1rem; }
+.product-card .card-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.product-card .card-text {
+  min-height: 2.2em;
+}
+.product-card .btn-crispy {
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+}
+
+/* ---- Floating cart bubble (TikTok-Shop style) ------------------------- */
+.cart-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ck-red-light), var(--ck-red-dark));
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--ck-shadow-red);
+  z-index: 1045;
+  transition: transform 0.15s ease;
+}
+.cart-fab:hover,
+.cart-fab:focus {
+  transform: scale(1.06);
+  color: #fff;
+}
+.cart-fab.bump {
+  animation: cartBump 0.4s ease;
+}
+@keyframes cartBump {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.28); }
+  65%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.cart-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--ck-gold);
+  color: var(--ck-dark);
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 21px;
+  height: 21px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #fff;
+}
+
+/* ---- Cart drawer -------------------------------------------------------- */
+.offcanvas {
+  border: none;
+  box-shadow: -8px 0 30px rgba(36, 21, 18, 0.15);
+}
+.offcanvas-header {
+  background: var(--ck-cream);
+}
+.offcanvas-title { font-weight: 700; }
+#cart-view, #checkout-view {
+  overflow-y: auto;
+}
+.cart-line-item {
+  border-bottom: 1px solid #f1e7db !important;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.cart-line-item .qty-stepper button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  line-height: 1;
+  border-radius: 50% !important;
+  margin: 0 2px;
+}
+.cart-line-item .item-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.6rem;
+  background: linear-gradient(135deg, #ffe8d6, #ffd7c2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 0.6rem;
+}
+
+@media (max-width: 480px) {
+  .offcanvas.offcanvas-end { width: 100vw; }
+}
+
+/* ---- Animated payment-success checkmark --------------------------------- */
+.checkmark-wrap {
+  width: 92px;
+  height: 92px;
+}
+.checkmark {
+  width: 100%;
+  height: 100%;
+}
+.checkmark-circle-bg {
+  stroke: #2ecc71;
+  stroke-width: 2.5;
+  stroke-dasharray: 152;
+  stroke-dashoffset: 152;
+}
+.checkmark-check {
+  stroke: #2ecc71;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+}
+.checkmark-wrap.animate .checkmark-circle-bg {
+  animation: circleDraw 0.5s ease-out forwards;
+}
+.checkmark-wrap.animate .checkmark-check {
+  animation: checkDraw 0.3s ease-out 0.45s forwards;
+}
+@keyframes circleDraw { to { stroke-dashoffset: 0; } }
+@keyframes checkDraw { to { stroke-dashoffset: 0; } }
+.modal-content { border: none; border-radius: 1.25rem; box-shadow: var(--ck-shadow-md); }
+
+/* ---- Toasts -------------------------------------------------------------- */
+#toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1080;
+  min-width: 260px;
+}
+.toast { border-radius: 0.75rem; overflow: hidden; }
+
+/* ---- POS dashboard --------------------------------------------------------- */
+.nav-tabs .nav-link {
+  border: none;
+  border-radius: 2rem;
+  color: var(--ck-dark);
+  font-weight: 500;
+  padding: 0.5rem 1.2rem;
+  margin-right: 0.4rem;
+}
+.nav-tabs { border-bottom: none; gap: 0.25rem; }
+.nav-tabs .nav-link.active {
+  background: var(--ck-red);
+  color: #fff;
+  box-shadow: var(--ck-shadow-red);
+}
+.nav-tabs .nav-link:hover:not(.active) { background: #ffece9; }
+
+.stat-card {
+  border-radius: 1.1rem;
+  border: none;
+  color: #fff;
+  box-shadow: var(--ck-shadow-sm);
+  transition: transform 0.15s ease;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card.bg-red { background: linear-gradient(135deg, var(--ck-red-light), var(--ck-red-dark)); }
+.stat-card.bg-gold { background: linear-gradient(135deg, #ffd15c, var(--ck-gold-dark)); color: var(--ck-dark); }
+.stat-card.bg-dark2 { background: linear-gradient(135deg, #3a241e, var(--ck-dark)); }
+.stat-card.bg-green { background: linear-gradient(135deg, #2fa06c, #178f56); }
+.stat-card .stat-icon { font-size: 1.6rem; opacity: 0.85; }
+
+.card { border: none; border-radius: 1rem; box-shadow: var(--ck-shadow-sm); }
+.card-header { background: #fff; border-bottom: 1px solid #f1e7db; font-weight: 600; border-radius: 1rem 1rem 0 0 !important; }
+
+.table { margin-bottom: 0; }
+.table thead th {
+  border-bottom: 2px solid #f1e7db;
+  color: var(--ck-text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.table-responsive { border-radius: 1rem; }
+
+.low-stock-row { background-color: #fff3cd !important; }
+
+/* ---- Responsive tweaks ----------------------------------------------------- */
+@media (max-width: 767.98px) {
+  .hero { padding: 2rem 1.2rem 1.8rem; border-radius: 0 0 1.25rem 1.25rem; }
+  .cart-fab { bottom: 1rem; right: 1rem; width: 52px; height: 52px; }
+  .navbar-crispy .navbar-brand { font-size: 1.1rem; }
+  .navbar .btn-outline-light { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+}

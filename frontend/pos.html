@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crispy King | Staff &amp; Admin Login</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='14'%3E%F0%9F%8D%97%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-dark navbar-crispy sticky-top mb-4">
+    <div class="container-fluid px-4 flex-wrap gap-2">
+      <span class="navbar-brand mb-0"><span class="brand-badge">🍗</span> <span data-site-business-name>Crispy King</span> — Staff &amp; Admin</span>
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <span id="whoami" class="text-white-50 small me-1"></span>
+        <button id="logout-btn" class="btn btn-outline-light btn-sm d-none">Log out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4 pb-5">
+
+    <!-- Staff / Admin login (this page is only reachable by URL — the customer
+         menu has no link to it, and it has no customer-facing login of its own) -->
+    <div id="login-section" class="row justify-content-center">
+      <div class="col-md-4">
+        <div class="card shadow-sm mt-4">
+          <div class="card-body p-4">
+            <div class="text-center mb-3">
+              <span class="brand-badge" style="width:3rem;height:3rem;font-size:1.6rem;">🍗</span>
+            </div>
+            <h5 class="card-title mb-1 text-center">Staff &amp; Admin Login</h5>
+            <p class="text-muted small text-center mb-3">Crispy King back office</p>
+            <form id="login-form">
+              <div class="mb-2">
+                <label class="form-label small">Username</label>
+                <input id="login-username" class="form-control" required autocomplete="username">
+              </div>
+              <div class="mb-3">
+                <label class="form-label small">Password</label>
+                <input id="login-password" type="password" class="form-control" required autocomplete="current-password">
+              </div>
+              <button class="btn btn-crispy w-100" type="submit">Log in</button>
+              <p class="small text-muted mt-2 mb-0">Demo accounts: admin/admin123, cashier1/cashier123</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main dashboard -->
+    <div id="dashboard-section" class="d-none">
+      <ul class="nav nav-tabs mb-3" id="posTabs">
+        <li class="nav-item"><button class="nav-link active" data-tab="orders">Orders</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="inventory">Inventory</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="ingredients">Ingredients</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="suppliers">Suppliers</button></li>
+        <li class="nav-item" data-admin-only><button class="nav-link" data-tab="expenses">Expenses</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="reports">Reports</button></li>
+        <li class="nav-item" data-admin-only><button class="nav-link" data-tab="settings">Settings</button></li>
+      </ul>
+
+      <!-- Orders tab -->
+      <div id="tab-orders" class="tab-pane">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0">Orders</h5>
+          <div class="d-flex gap-2">
+            <select id="order-status-filter" class="form-select form-select-sm" style="width:auto;">
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="preparing">Preparing</option>
+              <option value="ready">Ready</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-sm btn-outline-secondary" id="refresh-orders-btn">Refresh</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle bg-white">
+            <thead>
+              <tr><th>#</th><th>Type</th><th>Customer/Table</th><th>Items</th><th>Total</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Inventory tab (finished, sellable menu items) -->
+      <div id="tab-inventory" class="tab-pane d-none">
+        <h5 class="mb-2">Inventory</h5>
+        <p class="text-muted small mb-3">Stock of finished menu items. Raw materials used to make them live under <strong>Ingredients</strong>.</p>
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="table-responsive">
+              <table class="table table-sm bg-white align-middle">
+                <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Stock</th><th>Reorder Level</th><th></th></tr></thead>
+                <tbody id="inventory-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-title">Restock Item</h6>
+                <form id="restock-form">
+                  <div class="mb-2">
+                    <label class="form-label small">Product</label>
+                    <select id="restock-product" class="form-select form-select-sm" required></select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">Quantity</label>
+                    <input id="restock-quantity" type="number" min="1" class="form-control form-control-sm" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small">Note</label>
+                    <input id="restock-note" class="form-control form-control-sm" placeholder="e.g. weekly delivery">
+                  </div>
+                  <button class="btn btn-crispy btn-sm w-100" type="submit">Add Stock</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ingredients tab (raw materials/supplies: oil, flour, wrappers, gas...) -->
+      <div id="tab-ingredients" class="tab-pane d-none">
+        <h5 class="mb-2">Ingredients &amp; Supplies</h5>
+        <p class="text-muted small mb-3">Everything needed to make the menu — oil, flour, wrappers, gas, packaging, etc. Add anything new; the list isn't fixed.</p>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="card stat-card bg-dark2">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Ingredients tracked</div>
+                  <div class="fs-3 fw-bold" id="ing-stat-count">—</div>
+                </div>
+                <span class="stat-icon">🧂</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card stat-card bg-red">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Low stock</div>
+                  <div class="fs-3 fw-bold" id="ing-stat-low">—</div>
+                </div>
+                <span class="stat-icon">⚠️</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card stat-card bg-gold">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small">Stock value</div>
+                  <div class="fs-3 fw-bold" id="ing-stat-value">—</div>
+                </div>
+                <span class="stat-icon">💵</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="table-responsive">
+              <table class="table table-sm bg-white align-middle">
+                <thead><tr><th>Name</th><th>Unit</th><th>Stock</th><th>Reorder Level</th><th>Cost/Unit</th><th>Supplier</th><th></th></tr></thead>
+                <tbody id="ingredients-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h6 class="card-title">Restock Ingredient</h6>
+                <form id="ingredient-restock-form">
+                  <div class="mb-2">
+                    <label class="form-label small">Ingredient</label>
+                    <select id="ingredient-restock-select" class="form-select form-select-sm" required></select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">Quantity</label>
+                    <input id="ingredient-restock-quantity" type="number" step="0.01" min="0.01" class="form-control form-control-sm" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small">Note</label>
+                    <input id="ingredient-restock-note" class="form-control form-control-sm" placeholder="e.g. weekly delivery">
+                  </div>
+                  <button class="btn btn-crispy btn-sm w-100" type="submit">Add Stock</button>
+                </form>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-title">Add New Ingredient</h6>
+                <form id="ingredient-add-form">
+                  <div class="mb-2">
+                    <label class="form-label small">Name</label>
+                    <input id="ingredient-add-name" class="form-control form-control-sm" placeholder="e.g. Cooking Oil" required>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <label class="form-label small">Unit</label>
+                      <input id="ingredient-add-unit" class="form-control form-control-sm" placeholder="kg / liters / pack">
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small">Cost/Unit</label>
+                      <input id="ingredient-add-cost" type="number" step="0.01" min="0" class="form-control form-control-sm" placeholder="0.00">
+                    </div>
+                  </div>
+                  <div class="row g-2 mb-3">
+                    <div class="col-6">
+                      <label class="form-label small">Starting Stock</label>
+                      <input id="ingredient-add-stock" type="number" step="0.01" min="0" class="form-control form-control-sm" value="0">
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small">Reorder Level</label>
+                      <input id="ingredient-add-reorder" type="number" step="0.01" min="0" class="form-control form-control-sm" value="0">
+                    </div>
+                  </div>
+                  <button class="btn btn-outline-secondary btn-sm w-100" type="submit">+ Add Ingredient</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expenses tab (admin only) -->
+      <div id="tab-expenses" class="tab-pane d-none">
+        <h5 class="mb-2">Costs &amp; Expenses</h5>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="card stat-card bg-red">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Total Expenses (filtered)</div>
+                  <div class="fs-3 fw-bold" id="exp-stat-total">—</div>
+                </div>
+                <span class="stat-icon">💸</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card stat-card bg-dark2">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Entries</div>
+                  <div class="fs-3 fw-bold" id="exp-stat-count">—</div>
+                </div>
+                <span class="stat-icon">🧾</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card stat-card bg-gold">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small">Top category</div>
+                  <div class="fs-5 fw-bold" id="exp-stat-top">—</div>
+                </div>
+                <span class="stat-icon">🏷️</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h6 class="card-title">Add Expense</h6>
+                <form id="expense-form">
+                  <div class="mb-2">
+                    <label class="form-label small">Category</label>
+                    <select id="expense-category" class="form-select form-select-sm" required></select>
+                    <input id="expense-category-other" class="form-control form-control-sm mt-1 d-none" placeholder="Custom category name">
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">Description</label>
+                    <input id="expense-description" class="form-control form-control-sm" placeholder="e.g. Electricity bill">
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <label class="form-label small">Amount</label>
+                      <input id="expense-amount" type="number" step="0.01" min="0.01" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small">Date</label>
+                      <input id="expense-date" type="date" class="form-control form-control-sm" required>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small">Payment Method</label>
+                    <select id="expense-payment-method" class="form-select form-select-sm">
+                      <option value="cash">Cash</option>
+                      <option value="card">Card</option>
+                      <option value="bank_transfer">Bank Transfer</option>
+                      <option value="mobile">Mobile Money</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-crispy btn-sm w-100" type="submit">Save Expense</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+              <div>
+                <label class="form-label small mb-1">From</label>
+                <input id="expense-filter-start" type="date" class="form-control form-control-sm">
+              </div>
+              <div>
+                <label class="form-label small mb-1">To</label>
+                <input id="expense-filter-end" type="date" class="form-control form-control-sm">
+              </div>
+              <div>
+                <label class="form-label small mb-1">Category</label>
+                <select id="expense-filter-category" class="form-select form-select-sm">
+                  <option value="">All categories</option>
+                </select>
+              </div>
+              <button class="btn btn-sm btn-outline-secondary" id="expense-filter-apply">Apply</button>
+              <button class="btn btn-sm btn-outline-secondary" id="expense-filter-reset">Reset</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm bg-white align-middle">
+                <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Payment</th><th>Recorded by</th><th></th></tr></thead>
+                <tbody id="expenses-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports tab -->
+      <div id="tab-reports" class="tab-pane d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+          <h5 class="mb-0">Reports &amp; Analytics</h5>
+          <select id="reports-days" class="form-select form-select-sm" style="width:auto;">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-3">
+            <div class="card stat-card bg-red">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Orders</div>
+                  <div class="fs-3 fw-bold" id="stat-orders">—</div>
+                </div>
+                <span class="stat-icon">🧾</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card stat-card bg-gold">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small">Revenue</div>
+                  <div class="fs-3 fw-bold" id="stat-revenue">—</div>
+                </div>
+                <span class="stat-icon">💰</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card stat-card bg-dark2">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Avg Order Value</div>
+                  <div class="fs-3 fw-bold" id="stat-avg">—</div>
+                </div>
+                <span class="stat-icon">📊</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card stat-card bg-red">
+              <div class="card-body d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="small text-white-50">Menu Stock Value</div>
+                  <div class="fs-3 fw-bold" id="stat-stock-value">—</div>
+                </div>
+                <span class="stat-icon">📦</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-admin-only>
+        <h6 class="section-title fs-6 text-uppercase text-muted mb-2" style="letter-spacing:.4px;">Profit &amp; Loss</h6>
+        <div class="row g-3 mb-4" id="admin-only-pl">
+          <div class="col-6 col-md">
+            <div class="card stat-card bg-gold">
+              <div class="card-body">
+                <div class="small">Revenue</div>
+                <div class="fs-4 fw-bold" id="pl-revenue">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md">
+            <div class="card stat-card bg-dark2">
+              <div class="card-body">
+                <div class="small text-white-50">Cost of Goods Sold</div>
+                <div class="fs-4 fw-bold" id="pl-cogs">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md">
+            <div class="card stat-card bg-dark2">
+              <div class="card-body">
+                <div class="small text-white-50">Gross Profit</div>
+                <div class="fs-4 fw-bold" id="pl-gross">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md">
+            <div class="card stat-card bg-red">
+              <div class="card-body">
+                <div class="small text-white-50">Total Expenses</div>
+                <div class="fs-4 fw-bold" id="pl-expenses">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md">
+            <div class="card stat-card" id="pl-net-card">
+              <div class="card-body">
+                <div class="small" id="pl-net-label">Net Profit</div>
+                <div class="fs-4 fw-bold" id="pl-net">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header bg-white">Daily Sales Trend</div>
+              <div class="card-body">
+                <canvas id="chart-daily-sales" height="180" role="img" aria-label="Line chart of daily revenue for the selected period"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6" data-admin-only>
+            <div class="card">
+              <div class="card-header bg-white">Expenses by Category</div>
+              <div class="card-body">
+                <canvas id="chart-expenses-category" height="180" role="img" aria-label="Bar chart of total expenses per category"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header bg-white">Top Products</div>
+              <div class="card-body">
+                <table class="table table-sm mb-0">
+                  <thead><tr><th>Product</th><th>Units Sold</th><th>Revenue</th></tr></thead>
+                  <tbody id="top-products-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header bg-white">Sales by Category</div>
+              <div class="card-body">
+                <table class="table table-sm mb-0">
+                  <thead><tr><th>Category</th><th>Units Sold</th><th>Revenue</th></tr></thead>
+                  <tbody id="category-sales-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings tab (admin only) -->
+      <div id="tab-settings" class="tab-pane d-none">
+        <h5 class="mb-2">Settings</h5>
+        <p class="text-muted small mb-3">Business info, currency and tax rate — changes apply immediately across the whole system, no restart needed.</p>
+        <div class="row justify-content-center">
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <form id="settings-form">
+                  <div class="mb-2">
+                    <label class="form-label small">Business Name</label>
+                    <input id="settings-business-name" class="form-control form-control-sm" required>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <label class="form-label small">Currency Symbol</label>
+                      <input id="settings-currency-symbol" class="form-control form-control-sm" maxlength="5" required>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small">Tax Rate (%)</label>
+                      <input id="settings-tax-rate" type="number" step="0.1" min="0" max="100" class="form-control form-control-sm" required>
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">Business Phone</label>
+                    <input id="settings-business-phone" class="form-control form-control-sm">
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">Business Address</label>
+                    <input id="settings-business-address" class="form-control form-control-sm">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small">Receipt Footer Note</label>
+                    <input id="settings-receipt-footer" class="form-control form-control-sm">
+                  </div>
+                  <button class="btn btn-crispy btn-sm w-100" type="submit">Save Settings</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suppliers tab -->
+      <div id="tab-suppliers" class="tab-pane d-none">
+        <h5 class="mb-2">Suppliers</h5>
+        <div class="table-responsive">
+          <table class="table table-sm bg-white align-middle">
+            <thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>Email</th><th>Products Supplied</th></tr></thead>
+            <tbody id="suppliers-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pos.js"></script>
+</body>
+</html>
